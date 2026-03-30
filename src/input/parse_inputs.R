@@ -9,6 +9,8 @@ parse_nutrition_inputs <- function(lon,
                                    edible_parts_ID,
                                    food_groups_ID,
                                    growth_forms_ID,
+                                   soil_con_ID,
+                                   species_type,
                                    within_range,
                                    incl_tentative,
                                    SSP,
@@ -20,6 +22,7 @@ parse_nutrition_inputs <- function(lon,
   lat <- as.numeric(lat)
   
   # normalize string parameters (remove whitespace)
+  species_type <- trimws(as.character(species_type))
   within_range <- trimws(as.character(within_range))
   incl_tentative <- trimws(as.character(incl_tentative))
   SSP <- trimws(as.character(SSP))
