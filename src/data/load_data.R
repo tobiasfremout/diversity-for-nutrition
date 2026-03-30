@@ -6,7 +6,7 @@
 # load data
 load_data <- function(DATA_FOLDER) {
   
-  log_step("n01", "Loading nutrition data...")
+  log_step("n01 [load_data]", "Loading nutrition data...")
   
   # load nutrition data
   nutr_dat <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "species_nutrition_data.csv"))

@@ -6,7 +6,7 @@
 load_maps <- function(species_set, DATA_FOLDER) {
 
   # load distribution maps present climate
-  log_step("n02", "Loading distribution maps present climate...")
+  log_step("n02 [load_maps]", "Loading distribution maps present climate...")
 
   maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence")
   distr_stack <- NULL
@@ -27,7 +27,7 @@ load_maps <- function(species_set, DATA_FOLDER) {
   }
   
   # load distribution maps future climate
-  log_step("n03", "Loading distribution maps future climate...")
+  log_step("n03 [load_maps]", "Loading distribution maps future climate...")
   
   maps_folder <- file.path(DATA_FOLDER, "Maps", "Future")
   distr_stack_future <- NULL
