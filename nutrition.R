@@ -9,13 +9,19 @@ source(file.path(R_HOME, "src", "output", "report_html.r"))
 process_nutrition <- function(lon,
                               lat) {
     
-    # coordinates
-    coords <- data.frame(lon = lon, lat = lat)
-    
     ##############################################################################
     # 1. Parse inputs
     ##############################################################################
     inputs <- parse_nutrition_inputs(
+      lon = lon,
+      lat = lat,
+      edible_parts_ID = edible_parts_ID,
+      food_groups_ID = food_groups_ID,
+      growth_forms_ID = growth_forms_ID,
+      within_range = within_range,
+      incl_tentative = incl_tentative,
+      SSP = SSP,
+      language_output
     )
     
     ##############################################################################
@@ -42,9 +48,9 @@ process_nutrition <- function(lon,
     )
     
     ##############################################################################
-    # 3. Species analysis
+    # 3. Visualization
     ##############################################################################
-    vis <- visualization(
+    vis <- visualize(
 
     )
 
