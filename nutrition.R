@@ -1,12 +1,20 @@
 # Orchestrator script for Diversity for Nutrition tool
 
-# fixed inputs Tobias
+# set R_HOME
 R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
-DATA_FOLDER <- "C:/Users/tobia/Dropbox/Diversity for Nutrition/Data"
+
+# source config.R
+source(file.path(R_HOME, "config.R"))
+
+# reset R_HOME
+R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
 
 # source scripts
+source(file.path(R_HOME, "src", "io", "helpers.r"))
+source(file.path(R_HOME, "src", "io", "utils.r"))
 source(file.path(R_HOME, "src", "input", "parse_inputs.r"))
 source(file.path(R_HOME, "src", "data", "load_data.r"))
+source(file.path(R_HOME, "src", "data", "load_maps.r"))
 source(file.path(R_HOME, "src", "analysis", "species_analysis.r"))
 source(file.path(R_HOME, "src", "output", "visualization.r"))
 source(file.path(R_HOME, "src", "output", "report_html.r"))
@@ -32,9 +40,9 @@ process_nutrition <- function(lon,
     )
     
     ##############################################################################
-    # 2. Load nutrition data
+    # 2. Load data
     ##############################################################################
-    data <- load_nutrition_data(
+    data <- load_data(
       DATA_FOLDER = DATA_FOLDER
     )
     
