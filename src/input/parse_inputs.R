@@ -50,11 +50,11 @@ parse_nutrition_inputs <- function(lon,
     growth_forms_ID <- trimws(growth_forms_ID)
   }
   
-  if (growth_forms_ID == "NULL"){
-    growth_forms_ID <- NULL
+  if (species_type_ID == "NULL"){
+    species_type_ID <- NULL
   } else {
-    growth_forms_ID <- unlist(strsplit(trimws(as.character(growth_forms_ID)), split=","))
-    growth_forms_ID <- trimws(growth_forms_ID)
+    species_type_ID <- unlist(strsplit(trimws(as.character(species_type_ID)), split=","))
+    species_type_ID <- trimws(species_type_ID)
   }
   
   # if (soil_con_ID == "NULL"){
@@ -68,12 +68,13 @@ parse_nutrition_inputs <- function(lon,
   list(
     lon = lon,
     lat = lat,
-    growth_forms_ID = edible_parts_ID,
+    edible_parts_ID = edible_parts_ID,
     food_groups_ID = food_groups_ID,
     growth_forms_ID = growth_forms_ID,
+    species_type_ID = species_type_ID,
     within_range = within_range,
     incl_tentative = incl_tentative,
     SSP = SSP,
-    language_output
+    language_output = language_output
   )
 }
