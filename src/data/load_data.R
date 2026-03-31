@@ -10,18 +10,34 @@ load_data <- function(DATA_FOLDER) {
   
   # load nutrition data
   nutr_dat <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "species_nutrition_data.csv"))
-
-  # load soil extremes data
-  # soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "soil_extremes.csv"))
   
   # get the species for which models were made
   j <- which(nutr_dat$incl_SDM == 1)
   species_set <- nutr_dat$species[j]
   
+  # load edible parts table
+  edible_parts <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "plant_parts.csv"))
+  
+  # load food groups table
+  food_groups <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "food_groups.csv"))
+  
+  # load growth forms table
+  growth_forms <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "growth_forms.csv"))
+  
+  # load species types table
+  species_types <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "species_types.csv"))
+
+  # load soil extremes data
+  # soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "soil_extremes.csv"))
+  
   # return of the function
   list(
     nutr_dat = nutr_dat,
-    # soil_dat = soil_dat,
-    species_set = species_set
+    species_set = species_set,
+    edible_parts = edible_parts,
+    food_groups = food_groups,
+    growth_forms = growth_forms,
+    species_types = species_types
+    # soil_dat = soil_dat
   )
 }
