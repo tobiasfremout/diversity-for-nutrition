@@ -4,7 +4,8 @@
 # =============================================================================
 
 # load data
-load_data <- function(DATA_FOLDER) {
+load_data <- function(DATA_FOLDER,
+                      language_output) {
   
   log_step("n01 [load_data]", "Loading nutrition data...")
   
@@ -30,6 +31,14 @@ load_data <- function(DATA_FOLDER) {
   # load soil extremes data
   # soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "soil_extremes.csv"))
   
+  # load translation table
+  trans_df <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_translation_backend.csv"))
+  j <- which(names(trans_df) == language_output)
+  trans_df <- trans_df[,c(1,j)]
+  trans_df <- data.frame(t(trans_df))
+  names(trans_df) <- trans_df[1,]
+  trans_df <- trans_df[-1,]
+  
   # return of the function
   list(
     nutr_dat = nutr_dat,
@@ -37,7 +46,8 @@ load_data <- function(DATA_FOLDER) {
     edible_parts = edible_parts,
     food_groups = food_groups,
     growth_forms = growth_forms,
-    species_types = species_types
-    # soil_dat = soil_dat
+    species_types = species_types,
+    # soil_dat = soil_dat,
+    trans_df = trans_df
   )
 }
