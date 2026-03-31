@@ -74,6 +74,6 @@ parse_nutrition_inputs <- function(lon,
     within_range = within_range,
     incl_tentative = incl_tentative,
     SSP = SSP,
-    language_output = language_outputs
+    language_output = language_output
   )
 }
