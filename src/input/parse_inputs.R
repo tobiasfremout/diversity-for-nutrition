@@ -9,8 +9,8 @@ parse_nutrition_inputs <- function(lon,
                                    edible_parts_ID,
                                    food_groups_ID,
                                    growth_forms_ID,
+                                   species_type_ID,
                                    # soil_con_ID,
-                                   species_type,
                                    within_range,
                                    incl_tentative,
                                    SSP,
@@ -41,6 +41,13 @@ parse_nutrition_inputs <- function(lon,
   } else {
     food_groups_ID <- unlist(strsplit(trimws(as.character(food_groups_ID)), split=","))
     food_groups_ID <- trimws(food_groups_ID)
+  }
+  
+  if (growth_forms_ID == "NULL"){
+    growth_forms_ID <- NULL
+  } else {
+    growth_forms_ID <- unlist(strsplit(trimws(as.character(growth_forms_ID)), split=","))
+    growth_forms_ID <- trimws(growth_forms_ID)
   }
   
   if (growth_forms_ID == "NULL"){
