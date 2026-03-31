@@ -3,12 +3,20 @@
 # =============================================================================
 
 # load present distribution maps for all species in species_set
-load_maps <- function(species_set, DATA_FOLDER) {
+load_maps <- function(species_set, 
+                      DATA_FOLDER,
+                      within_range,
+                      SSP) {
 
   # load distribution maps present climate
   log_step("n02 [load_maps]", "Loading distribution maps present climate...")
-
-  maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence")
+  
+  if(within_range == "yes") {
+    maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence masked by hull")
+  }
+  if(within_range == "no") {
+    maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence")
+  }
   distr_stack <- NULL
 
   for (sp in species_set) {
@@ -29,7 +37,13 @@ load_maps <- function(species_set, DATA_FOLDER) {
   # load distribution maps future climate
   log_step("n03 [load_maps]", "Loading distribution maps future climate...")
   
-  maps_folder <- file.path(DATA_FOLDER, "Maps", "Future")
+  if(within_range == "yes") {
+    maps_folder <- file.path(DATA_FOLDER, "Maps", "Future masked by hull", SSP)
+  }
+  if(within_range == "no") {
+    maps_folder <- file.path(DATA_FOLDER, "Maps", "Future", SSP)
+  }
+  
   distr_stack_future <- NULL
   
   for (sp in species_set) {
