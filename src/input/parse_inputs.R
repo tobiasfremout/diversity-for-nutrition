@@ -22,7 +22,6 @@ parse_nutrition_inputs <- function(lon,
   lat <- as.numeric(lat)
   
   # normalize string parameters (remove whitespace)
-  species_type <- trimws(as.character(species_type))
   within_range <- trimws(as.character(within_range))
   incl_tentative <- trimws(as.character(incl_tentative))
   SSP <- trimws(as.character(SSP))
@@ -75,6 +74,6 @@ parse_nutrition_inputs <- function(lon,
     within_range = within_range,
     incl_tentative = incl_tentative,
     SSP = SSP,
-    language_output = language_output
+    language_output = language_outputs
   )
 }
