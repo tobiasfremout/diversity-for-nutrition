@@ -17,7 +17,9 @@ get_biome <- function(lon,
   biome_name <- e$BIOME_NAME
   
   # return of the function
-  biome_name
+  list(
+    biome_name = biome_name
+  )
   
 }
   
