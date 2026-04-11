@@ -10,7 +10,7 @@ parse_nutrition_inputs <- function(lon,
                                    food_groups_ID,
                                    growth_forms_ID,
                                    species_type_ID,
-                                   # soil_con_ID,
+                                   soil_con_ID,
                                    within_range,
                                    incl_tentative,
                                    SSP,
@@ -56,12 +56,12 @@ parse_nutrition_inputs <- function(lon,
     species_type_ID <- trimws(species_type_ID)
   }
   
-  # if (soil_con_ID == "NULL"){
-  #   soil_con_ID <- NULL
-  # } else {
-  #   soil_con_ID <- unlist(strsplit(trimws(as.character(soil_con_ID)), split=","))
-  #   soil_con_ID <- trimws(soil_con_ID)
-  # }
+  if (soil_con_ID == "NULL"){
+     soil_con_ID <- NULL
+  } else {
+     soil_con_ID <- unlist(strsplit(trimws(as.character(soil_con_ID)), split=","))
+     soil_con_ID <- trimws(soil_con_ID)
+  }
   
   # Return all parsed parameters as a named list
   list(
@@ -71,6 +71,7 @@ parse_nutrition_inputs <- function(lon,
     food_groups_ID = food_groups_ID,
     growth_forms_ID = growth_forms_ID,
     species_type_ID = species_type_ID,
+    soil_con_ID = soil_con_ID,
     within_range = within_range,
     incl_tentative = incl_tentative,
     SSP = SSP,
