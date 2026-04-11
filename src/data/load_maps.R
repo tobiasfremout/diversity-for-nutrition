@@ -5,6 +5,7 @@
 # load present distribution maps for all species in species_set
 load_maps <- function(species_set, 
                       DATA_FOLDER,
+                      BUCKET_NAME,
                       within_range,
                       SSP) {
 
@@ -17,22 +18,12 @@ load_maps <- function(species_set,
   if(within_range == "no") {
     maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence")
   }
-  distr_stack <- NULL
-
-  for (sp in species_set) {
-    map_path <- file.path(maps_folder, paste0(sp, ".tif"))
-    rast_obj <- load_raster(map_path)
-
-    if (inherits(rast_obj, "SpatRaster")) {
-      if (is.null(distr_stack)) {
-        distr_stack <- rast_obj
-      } else {
-        distr_stack <- c(distr_stack, rast_obj)
-      }
-    } else {
-      cat(paste0("  WARNING: Could not load map for species: ", sp, "\n"))
-    }
-  }
+  files <- list_files_in_s3(bucket = BUCKET_NAME, prefix = maps_folder)
+  files <- files[grepl("\\.tif$", files)]
+  distr_stack <- terra::rast(lapply(files, load_raster))
+  
+  # change the names to the species names only
+  names(distr_stack) <- tools::file_path_sans_ext(basename(sources(distr_stack)))
   
   # load distribution maps future climate
   log_step("n03 [load_maps]", "Loading distribution maps future climate...")
@@ -43,26 +34,15 @@ load_maps <- function(species_set,
   if(within_range == "no") {
     maps_folder <- file.path(DATA_FOLDER, "Maps", "Future", SSP)
   }
-  
-  distr_stack_future <- NULL
-  
-  for (sp in species_set) {
-    map_path <- file.path(maps_folder, paste0(sp, ".tif"))
-    rast_obj <- load_raster(map_path)
-    
-    if (inherits(rast_obj, "SpatRaster")) {
-      if (is.null(distr_stack_future)) {
-        distr_stack_future <- rast_obj
-      } else {
-        distr_stack_future <- c(distr_stack_future, rast_obj)
-      }
-    } else {
-      cat(paste0("  WARNING: Could not load map for species: ", sp, "\n"))
-    }
-  }
+  files <- list_files_in_s3(bucket = BUCKET_NAME, prefix = maps_folder)
+  files <- files[grepl("\\.tif$", files)]
+  distr_stack_future <- terra::rast(lapply(files, load_raster))
   
   # return of the function
   list(distr_stack = distr_stack, distr_stack_future = distr_stack_future)
+  
+  # change the names to the species names only
+  names(distr_stack_future) <- tools::file_path_sans_ext(basename(sources(distr_stack_future)))
   
 }
 
