@@ -5,6 +5,7 @@ library(readxl)
 setwd(dir = "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/Data/Tables")
 df <- read_xlsx("soil_outliers_20260401.xlsx")
 var_cats <- read.csv("D4N_soil_vars.csv")
+var_cats <- var_cats[!is.na(var_cats$var), ]
 
 # flag species with n >= 10 whose median falls outside the biome reference IQR
 df$outlier_low  <- df$n_total >= 10 & df$sp_median < df$Q25_ref_eco
