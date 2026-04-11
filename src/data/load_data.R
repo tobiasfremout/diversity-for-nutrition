@@ -10,26 +10,26 @@ load_data <- function(DATA_FOLDER,
   log_step("n01 [load_data]", "Loading nutrition data...")
   
   # load nutrition data
-  nutr_dat <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "species_nutrition_data.csv"))
+  nutr_dat <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_species_nutrition_data.csv"))
   
   # get the species for which models were made
   j <- which(nutr_dat$incl_SDM == 1)
   species_set <- nutr_dat$species[j]
   
   # load edible parts table
-  edible_parts <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "plant_parts.csv"))
+  edible_parts <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_plant_parts.csv"))
   
   # load food groups table
-  food_groups <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "food_groups.csv"))
+  food_groups <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_food_groups.csv"))
   
   # load growth forms table
-  growth_forms <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "growth_forms.csv"))
+  growth_forms <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_growth_forms.csv"))
   
   # load species types table
-  species_types <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "species_types.csv"))
+  species_types <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_species_types.csv"))
 
   # load soil extremes data
-  # soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "soil_extremes.csv"))
+  soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "D4N_soil_extremes.csv"))
   
   # load translation table
   trans_df <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_translation_backend.csv"))
