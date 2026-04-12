@@ -2,8 +2,10 @@
 library(readxl)
 
 # load data
-setwd(dir = "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/Data/Tables")
+setwd(dir = "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/Data/Tables Chrystian")
 df <- read_xlsx("soil_outliers_20260401.xlsx")
+
+setwd(dir = "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/Data/Tables")
 var_cats <- read.csv("D4N_soil_vars.csv")
 var_cats <- var_cats[!is.na(var_cats$var), ]
 
