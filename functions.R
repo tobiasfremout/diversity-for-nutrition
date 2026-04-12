@@ -26,17 +26,17 @@ source(resolve_config_path())
 rm(resolve_config_path)
 
 # main function, which calls process_nutrition function
-mainNutrition <- function(lon = lon,
-                          lat = lat,
-                          edible_parts_ID = edible_parts_ID,
-                          food_groups_ID = food_groups_ID,
-                          growth_forms_ID = growth_forms_ID,
-                          species_type_ID = species_type_ID,
-                          soil_type_ID = soil_type_ID,
-                          within_range = within_range,
-                          incl_tentative = incl_tentative,
-                          SSP = SSP,
-                          language_output = language_output) {
+mainNutrition <- function(lon,
+                          lat,
+                          edible_parts_ID,
+                          food_groups_ID,
+                          growth_forms_ID,
+                          species_type_ID,
+                          soil_con_ID,
+                          within_range,
+                          incl_tentative,
+                          SSP,
+                          language_output) {
   
   date_download <<- format(Sys.time(), "report_%Y-%m-%d_%H-%M-%S")
   REPORT_FOLDER <<- file.path(tempdir(), date_download)
@@ -55,6 +55,7 @@ mainNutrition <- function(lon = lon,
     food_groups_ID = food_groups_ID,
     growth_forms_ID = growth_forms_ID,
     species_type_ID = species_type_ID,
+    soil_con_ID = soil_con_ID,
     within_range = within_range,
     incl_tentative = incl_tentative,
     SSP = SSP,
