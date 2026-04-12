@@ -7,10 +7,11 @@ load_maps <- function(species_set,
                       DATA_FOLDER,
                       BUCKET_NAME,
                       within_range,
-                      SSP) {
+                      SSP,
+                      biome) {
 
   # load distribution maps present climate
-  log_step("n02 [load_maps]", "Loading distribution maps present climate...")
+  log_step("n03 [load_maps]", "Loading distribution maps present climate...")
   
   if(within_range == "yes") {
     maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence masked by hull")
@@ -26,7 +27,7 @@ load_maps <- function(species_set,
   names(distr_stack) <- tools::file_path_sans_ext(basename(sources(distr_stack)))
   
   # load distribution maps future climate
-  log_step("n03 [load_maps]", "Loading distribution maps future climate...")
+  log_step("n04 [load_maps]", "Loading distribution maps future climate...")
   
   if(within_range == "yes") {
     maps_folder <- file.path(DATA_FOLDER, "Maps", "Future masked by hull", SSP)

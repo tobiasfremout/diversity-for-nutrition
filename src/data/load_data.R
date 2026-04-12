@@ -1,5 +1,4 @@
 # =============================================================================
-# R/load_data.r
 # Loading data from S3 and filtering objectives/conditions/species
 # =============================================================================
 
@@ -15,6 +14,7 @@ load_data <- function(DATA_FOLDER,
   # get the species for which models were made
   j <- which(nutr_dat$incl_SDM == 1)
   species_set <- nutr_dat$species[j]
+  species_set <- species_set[-which(duplicated(species_set))]
   
   # load edible parts table
   edible_parts <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_plant_parts.csv"))
@@ -29,7 +29,7 @@ load_data <- function(DATA_FOLDER,
   species_types <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_species_types.csv"))
 
   # load soil extremes data
-  soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "D4N_soil_extremes.csv"))
+  soil_dat <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_soil_extremes.csv"))
   
   # load translation table
   trans_df <- safe_read_csv(file.path(DATA_FOLDER, "Tables", "D4N_translation_backend.csv"))
@@ -47,7 +47,7 @@ load_data <- function(DATA_FOLDER,
     food_groups = food_groups,
     growth_forms = growth_forms,
     species_types = species_types,
-    # soil_dat = soil_dat,
+    soil_dat = soil_dat,
     trans_df = trans_df
   )
 }
