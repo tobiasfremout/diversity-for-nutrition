@@ -90,7 +90,8 @@ process_nutrition <- function(lon = NULL,
     species_extr <- extract_suitable_species(
       lon = lon,
       lat = lat,
-      maps = maps
+      maps_present = maps$distr_stack,
+      maps_future = maps$distr_stack_future
     )
     # print(species_extr)
     
@@ -115,6 +116,7 @@ process_nutrition <- function(lon = NULL,
       incl_tentative = inputs$incl_tentative,
       language_output = inputs$language_output
     )
+    print(species_filt)
     
     ##############################################################################
     # 6. Visualization
