@@ -7,7 +7,7 @@ R backend for the Diversity for Nutrition tool. Given a location (longitude, lat
 1. **Parse inputs** — convert and validate all parameters arriving as strings
 2. **Load data** — read species nutrition data and soil data (from S3 or local)
 3. **Load maps** — load present-climate and future-climate SDM rasters for each species
-4. **Species analysis** — extract which species are predicted present at the coordinates, then filter by user inputs
+4. **Species analysis** — extract which species are predicted to be suitable at the coordinates, then filter by user inputs (edible parts, food groups etc)
 5. **Output** — generate an HTML report and upload it to S3
 
 ## Entry point
