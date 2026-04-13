@@ -52,7 +52,7 @@ functions.R              # Entry point — mainNutrition()
 nutrition.R              # Orchestrator — process_nutrition()
 config.R                 # Runtime config (local vs Lambda/S3)
 src/
-  libs.R                 # Package dependencies
+  libs.R                 # Packages
   io/
     utils.R              # S3/local file I/O (download, upload, load_raster, etc.)
     helpers.R            # Logging, reverse geocoding, CSV reading
