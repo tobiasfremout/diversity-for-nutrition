@@ -1,7 +1,7 @@
 # =============================================================================
 # Extract species that can grow at the selected coordinates
 # =============================================================================
-extract_suitable_species <- function(lon, lat, maps) {
+extract_suitable_species <- function(lon, lat, maps_present, maps_future) {
   
   log_step("n05 [species_analysis]", "Extracting suitable species...")
   
@@ -9,16 +9,18 @@ extract_suitable_species <- function(lon, lat, maps) {
   coords <- data.frame(lon = lon, lat = lat)
   
   # extract suitable species present climate
-  e <- terra::extract(maps$distr_stack, coords)
+  e <- terra::extract(maps_present, coords)
   e <- e[,2:ncol(e)]
-  names(e) <- names(distr_stack)
+  names(e) <- names(maps_present)
   j <- which(e[1,] == 1)
   suitable_species <- names(e)[j]
   
+  log_step("n05b [species_analysis]", "Extracting future presence...")
+
   # get number of models that predict future presence
-  e <- terra::extract(maps$distr_stack_future, coords)
+  e <- terra::extract(maps_future, coords)
   e <- e[,2:ncol(e)]
-  names(e) <- names(distr_stack)
+  names(e) <- names(maps_future)
   n_models <- e[1,j]
   
   # return of the function
@@ -112,6 +114,7 @@ filter_species <- function(nutr_dat,
   
   # select only relevant columns for report
   nutr_table <- nutr_dat[, c("species", "family", "growth_form", "wild_or_cultivated", "plant_part", "food_group", "use")]
+  nutr_table <- nutr_table[order(nutr_table$family, nutr_table$species), ]
   
   # return of the function
   list(
