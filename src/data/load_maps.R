@@ -39,11 +39,11 @@ load_maps <- function(species_set,
   files <- files[grepl("\\.tif$", files)]
   distr_stack_future <- terra::rast(lapply(files, load_raster))
   
-  # return of the function
-  list(distr_stack = distr_stack, distr_stack_future = distr_stack_future)
-  
   # change the names to the species names only
   names(distr_stack_future) <- tools::file_path_sans_ext(basename(sources(distr_stack_future)))
+
+  # return of the function
+  list(distr_stack = distr_stack, distr_stack_future = distr_stack_future)
   
 }
 
