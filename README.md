@@ -31,20 +31,6 @@ mainNutrition(
 
 All parameters are passed as strings (as received from the web app). See `test_runner.R` for a working example.
 
-## Parameters
-
-| Parameter | Description | Values |
-|---|---|---|
-| `lon`, `lat` | Coordinates | Decimal degrees |
-| `edible_parts_ID` | Comma-separated edible part IDs to include | e.g. `"5,6"` or `"NULL"` |
-| `food_groups_ID` | Comma-separated food group IDs to include | e.g. `"3,15"` or `"NULL"` |
-| `growth_forms_ID` | Comma-separated growth form IDs to include | e.g. `"1"` or `"NULL"` |
-| `species_type_ID` | Wild, cultivated, or both | `"1"` |
-| `within_range` | Use hull-masked maps (within native range only) | `"yes"` / `"no"` |
-| `incl_tentative` | Include tentative plant part / food group classifications | `"yes"` / `"no"` |
-| `SSP` | Climate scenario for future maps | `"SSP2"`, etc. |
-| `language_output` | Output language | `"EN"`, `"ES"`, `"FR"`, `"VI"`, `"LO"` |
-
 ## Project structure
 
 ```
