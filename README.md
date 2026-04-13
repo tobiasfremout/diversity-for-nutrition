@@ -1,6 +1,6 @@
 # Diversity for Nutrition
 
-R backend for the Diversity for Nutrition tool. Given a geographic coordinate and user-defined filters, it identifies plant species that are predicted to grow at that location and returns their nutritional information.
+R backend for the Diversity for Nutrition tool. Given a location (longitude, latitude) and user-defined filters, the tool identifies plant species that can be grown at that location and returns their nutritional information (edible part, food group).
 
 ## How it works
 
