@@ -54,19 +54,23 @@ process_nutrition <- function(lon = NULL,
     ##############################################################################
     # 2. Get biome
     ##############################################################################
+    # Use inputs$lon / inputs$lat (already coerced to numeric by
+    # parse_nutrition_inputs). The raw lon/lat arguments arrive as strings
+    # whenever the function is invoked from the web app, which makes
+    # terra::vect(matrix(c(lon,lat),...)) fail with "coordinates must be numeric".
     biome <- get_biome(
-      lon = lon,
-      lat = lat,
+      lon = inputs$lon,
+      lat = inputs$lat,
       DATA_FOLDER = DATA_FOLDER
     )
     # print(biome)
-    
+
     ##############################################################################
     # 3. Load maps
     ##############################################################################
     # Resolve country+region once (used by load_maps and the report payload).
     # SA/CA split is only applied in load_maps when SPLIT_MAPS_BY_REGION=TRUE.
-    country <- coords2country(lon, lat)
+    country <- coords2country(inputs$lon, inputs$lat)
     region <- region_from_country(country)
 
     maps <- load_maps(
@@ -79,13 +83,13 @@ process_nutrition <- function(lon = NULL,
       region = region
     )
     # print(maps)
-    
+
     ##############################################################################
     # 4. Extract species that can grow at selected site
     ##############################################################################
     species_extr <- extract_suitable_species(
-      lon = lon,
-      lat = lat,
+      lon = inputs$lon,
+      lat = inputs$lat,
       maps_present = maps$distr_stack,
       maps_future = maps$distr_stack_future
     )
