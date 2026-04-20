@@ -9,7 +9,7 @@ source(file.path(R_HOME, "src", "input", "get_biome.r"))
 source(file.path(R_HOME, "src", "data", "load_data.r"))
 source(file.path(R_HOME, "src", "data", "load_maps.r"))
 source(file.path(R_HOME, "src", "analysis", "species_analysis.r"))
-source(file.path(R_HOME, "src", "output", "report_html.r"))
+source(file.path(R_HOME, "src", "output", "report_data.r"))
 
 # main function to call the other functions
 process_nutrition <- function(lon = NULL,
@@ -64,9 +64,10 @@ process_nutrition <- function(lon = NULL,
     ##############################################################################
     # 3. Load maps
     ##############################################################################
-    # Resolve region (SA/CA) from coordinates so load_maps can pick the right
-    # map split when SPLIT_MAPS_BY_REGION=TRUE. When FALSE, region is unused.
-    region <- region_from_country(coords2country(lon, lat))
+    # Resolve country+region once (used by load_maps and the report payload).
+    # SA/CA split is only applied in load_maps when SPLIT_MAPS_BY_REGION=TRUE.
+    country <- coords2country(lon, lat)
+    region <- region_from_country(country)
 
     maps <- load_maps(
       species_set = data$species_set,
@@ -111,20 +112,17 @@ process_nutrition <- function(lon = NULL,
       incl_tentative = inputs$incl_tentative,
       language_output = inputs$language_output
     )
-    print(species_filt)
-    
     ##############################################################################
-    # 6. Visualization
+    # 6. Generate report data (JSON for frontend consumption)
     ##############################################################################
-    # vis <- visualize(species_res = species_res)
-    
-    ##############################################################################
-    # 7. Generate HTML report
-    ##############################################################################
-    generate_html_report(
-      nutr_table = species_filt$nutr_table,
-      output_result = REPORT_FOLDER,
-      language_output = inputs$language_output
+    generate_report_data(
+      inputs        = inputs,
+      country       = country,
+      region        = region,
+      biome_name    = biome$biome_name,
+      species_filt  = species_filt,
+      trans_df      = data$trans_df,
+      output_folder = REPORT_FOLDER
     )
-    
+
 }
