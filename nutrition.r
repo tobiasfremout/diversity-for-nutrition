@@ -1,15 +1,6 @@
 # Orchestrator script for Diversity for Nutrition tool
+# R_HOME is already defined by config.r (sourced from functions.r before this file).
 
-# set R_HOME
-R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
-
-# source config.R
-source(file.path(R_HOME, "config.R"))
-
-# reset R_HOME
-R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
-
-# source scripts
 source(file.path(R_HOME, "src", "libs.r"))
 source(file.path(R_HOME, "src", "io", "helpers.r"))
 source(file.path(R_HOME, "src", "io", "utils.r"))
@@ -18,7 +9,6 @@ source(file.path(R_HOME, "src", "input", "get_biome.r"))
 source(file.path(R_HOME, "src", "data", "load_data.r"))
 source(file.path(R_HOME, "src", "data", "load_maps.r"))
 source(file.path(R_HOME, "src", "analysis", "species_analysis.r"))
-# source(file.path(R_HOME, "src", "output", "visualization.r"))
 source(file.path(R_HOME, "src", "output", "report_html.r"))
 
 # main function to call the other functions
@@ -74,13 +64,18 @@ process_nutrition <- function(lon = NULL,
     ##############################################################################
     # 3. Load maps
     ##############################################################################
+    # Resolve region (SA/CA) from coordinates so load_maps can pick the right
+    # map split when SPLIT_MAPS_BY_REGION=TRUE. When FALSE, region is unused.
+    region <- region_from_country(coords2country(lon, lat))
+
     maps <- load_maps(
       species_set = data$species_set,
       DATA_FOLDER = DATA_FOLDER,
       BUCKET_NAME = BUCKET_NAME,
       within_range = inputs$within_range,
       SSP = inputs$SSP,
-      biome = biome$biome_name
+      biome = biome$biome_name,
+      region = region
     )
     # print(maps)
     

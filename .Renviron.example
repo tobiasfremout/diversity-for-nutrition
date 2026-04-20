@@ -1,0 +1,18 @@
+USE_LOCAL_FILES=TRUE
+LOCAL_DATA_PATH=C:/Users/tobia/Dropbox/diversity-for-nutrition
+debug_mode=FALSE
+
+# Cuando los mapas divididos por region (Maps SA / Maps CA) esten en S3,
+# poner esta variable en TRUE para activar la carga por region.
+SPLIT_MAPS_BY_REGION=FALSE
+
+# By default the engine looks for a diversity-for-nutrition-data/Data subfolder inside LOCAL_DATA_PATH.
+# If your data is already at the root of LOCAL_DATA_PATH, uncomment:
+# DATA_FOLDER=
+
+# Opcional: solo si quieres ejecutar contra S3 fuera de Lambda
+# USE_LOCAL_FILES=FALSE
+# AWS_ACCESS_KEY_ID=tu_access_key_id
+# AWS_SECRET_ACCESS_KEY=tu_secret_access_key
+# AWS_SESSION_TOKEN=tu_session_token_si_aplica
+# AWS_DEFAULT_REGION=us-east-1
