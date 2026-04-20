@@ -58,8 +58,13 @@ generate_html_report <- function(nutr_table,
   captionLab <- "test"
   HTML(captionLab, file = dirRepor, align = "left", row.names = FALSE)
   
-  # add filtered table
-  HTML(nutr_table, file = dirRepor, align = "left")
+  # add filtered table (guard against empty result)
+  if (nrow(nutr_table) == 0) {
+    HTML("<p><em>No species match the selected filters at this location.</em></p>",
+         file = dirRepor, align = "left")
+  } else {
+    HTML(nutr_table, file = dirRepor, align = "left")
+  }
   
   # write report
   html_file <- file.path(output_result, "reporte.html")
