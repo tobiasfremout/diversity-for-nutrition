@@ -60,7 +60,7 @@ filter_species <- function(nutr_dat,
   log_step("n07 [species_analysis]", "Filtering species: edible parts...")
   
   # select only the species with edible parts selected by the user
-  if(edible_parts_ID[1] != 1) {
+  if(length(edible_parts_ID) > 0 && edible_parts_ID[1] != 1) {
     m <- match(edible_parts_ID, edible_parts$ID)
     edible_parts_sel <- edible_parts$plant_part[m]
     j <- which(nutr_dat$plant_part %in% edible_parts_sel)
@@ -70,7 +70,7 @@ filter_species <- function(nutr_dat,
   log_step("n08 [species_analysis]", "Filtering species: food groups...")
   
   # select only the species with food groups selected by the user
-  if(food_groups_ID[1] != 1) {
+  if(length(food_groups_ID) > 0 && food_groups_ID[1] != 1) {
     m <- match(food_groups_ID, food_groups$ID)
     food_groups_sel <- food_groups$food_group[m]
     j <- which(nutr_dat$food_group %in% food_groups_sel)
@@ -80,7 +80,7 @@ filter_species <- function(nutr_dat,
   log_step("n09 [species_analysis]", "Filtering species: growth forms...")
   
   # select only the species with growth forms selected by the user
-  if(growth_forms_ID[1] != 1) {
+  if(length(growth_forms_ID) > 0 && growth_forms_ID[1] != 1) {
     m <- match(growth_forms_ID, growth_forms$ID)
     growth_forms_sel <- growth_forms$growth_form[m]
     j <- which(nutr_dat$growth_form %in% growth_forms_sel)
@@ -90,7 +90,7 @@ filter_species <- function(nutr_dat,
   log_step("n09 [species_analysis]", "Filtering species: species types (wild/cultivated)...")
   
   # select only the species types selected by the user
-  if(species_type_ID[1] != 1) {
+  if(length(species_type_ID) > 0 && species_type_ID[1] != 1) {
     m <- match(species_type_ID, species_types$ID)
     species_type_sel <- species_types$species_type[m]
     j <- which(nutr_dat$species_type %in% species_type_sel)
@@ -100,7 +100,7 @@ filter_species <- function(nutr_dat,
   log_step("n10 [species_analysis]", "Filtering species: soil conditions...")
   
   # select only the species with soil conditions (extremes) selected by the user
-  if(soil_con_ID[1] != 1) {
+  if(length(soil_con_ID) > 0 && soil_con_ID[1] != 1) {
     
     # get the rows corresponding to the selected soil extremes
     j <- which(soil_dat$category_ID %in% soil_con_ID)

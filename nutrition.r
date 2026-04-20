@@ -124,8 +124,7 @@ process_nutrition <- function(lon = NULL,
     generate_html_report(
       nutr_table = species_filt$nutr_table,
       output_result = REPORT_FOLDER,
-      language_output = inputs$language_output,
-      trans_df = data$trans_df
+      language_output = inputs$language_output
     )
     
 }
