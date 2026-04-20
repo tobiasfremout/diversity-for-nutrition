@@ -53,7 +53,7 @@ src/
 
 ## Data
 
-Expected data folder structure (S3 bucket: `diversity-for-nutrition`, default prefix: `diversity-for-nutrition-data/Data`):
+Expected data folder structure (S3 bucket: `d4n-data`, default prefix: `D4N_data`):
 
 ```
 Tables/
@@ -72,7 +72,7 @@ Set the environment variable `USE_LOCAL_FILES=TRUE` and `LOCAL_DATA_PATH` to you
 
 ```r
 Sys.setenv(USE_LOCAL_FILES = "TRUE")
-Sys.setenv(LOCAL_DATA_PATH = "C:/path/to/diversity-for-nutrition-data")
+Sys.setenv(LOCAL_DATA_PATH = "C:/path/to/D4N_data")
 ```
 
 ## Dependencies

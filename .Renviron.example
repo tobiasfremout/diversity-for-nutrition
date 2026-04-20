@@ -6,7 +6,7 @@ debug_mode=FALSE
 # poner esta variable en TRUE para activar la carga por region.
 SPLIT_MAPS_BY_REGION=FALSE
 
-# By default the engine looks for a diversity-for-nutrition-data/Data subfolder inside LOCAL_DATA_PATH.
+# By default the engine looks for a D4N_data subfolder inside LOCAL_DATA_PATH.
 # If your data is already at the root of LOCAL_DATA_PATH, uncomment:
 # DATA_FOLDER=
 
