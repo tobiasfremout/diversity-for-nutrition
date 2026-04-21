@@ -12,10 +12,11 @@ load_maps <- function(species_set,
                       region = NULL) {
 
   # Root folder for map rasters. When SPLIT_MAPS_BY_REGION=TRUE and region is
-  # provided, load from "Maps SA" / "Maps CA" (fewer rasters -> faster).
-  # Otherwise fall back to the single "Maps" folder.
+  # a known LatAm region (SA/CA), load from "Maps SA" / "Maps CA" for speed.
+  # Otherwise (flag off, or region=NA because the click landed outside the
+  # LatAm lookup) fall back to the single combined "Maps" folder.
   split_by_region <- isTRUE(as.logical(Sys.getenv("SPLIT_MAPS_BY_REGION", unset = "FALSE")))
-  maps_root <- if (split_by_region && !is.null(region)) {
+  maps_root <- if (split_by_region && !is.null(region) && !is.na(region)) {
     paste0("Maps ", region)
   } else {
     "Maps"

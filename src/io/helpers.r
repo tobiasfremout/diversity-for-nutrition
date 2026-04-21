@@ -93,8 +93,12 @@ region_from_country <- function(iso3) {
 
   if (iso3 %in% sa_countries) return("SA")
   if (iso3 %in% ca_countries) return("CA")
-  stop("Country '", iso3, "' is not mapped to a region (SA or CA). ",
-       "Update region_from_country() in src/io/helpers.r.")
+  # Outside LatAm (e.g. USA via the Everglades ecoregion that the source
+  # shapefile includes). Return NA so load_maps falls back to the combined
+  # Maps/ folder instead of crashing; callers that need SA/CA will check.
+  warning("Country '", iso3, "' is not mapped to a LatAm region (SA or CA). ",
+          "Falling back to the combined Maps/ folder.")
+  return(NA_character_)
 }
 
 # Helper function to safely read CSVs from S3
