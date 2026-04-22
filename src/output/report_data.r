@@ -65,5 +65,17 @@ generate_report_data <- function(inputs,
     js_file
   )
 
+  # Dev-only: when running locally (USE_LOCAL_FILES=TRUE), drop a copy of
+  # tools/local_viewer.html next to data.js so the run can be opened in a
+  # browser without extra steps. Deliberately skipped on Lambda — the
+  # production report is served by WordPress from its own template in a
+  # separate repo; the viewer here must never touch S3 / prod.
+  if (isTRUE(use_local)) {
+    viewer_path <- file.path(R_HOME, "tools", "local_viewer.html")
+    if (file.exists(viewer_path)) {
+      file.copy(viewer_path, file.path(output_folder, "local_viewer.html"), overwrite = TRUE)
+    }
+  }
+
   invisible(report_data)
 }
