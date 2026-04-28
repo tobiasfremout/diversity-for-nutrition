@@ -1,0 +1,107 @@
+FROM public.ecr.aws/lambda/provided:al2
+
+ENV R_VERSION=4.4.1
+ENV SQLITE_VERSION=3460000
+ENV GEOS_VERSION=3.10.2
+ENV UDUNITS_VERSION=2.2.27.27
+
+# System dependencies in a single layer
+RUN yum -y install \
+    wget git tar gcc gcc-c++ make texinfo libcurl-devel \
+    bzip2 bzip2-devel pcre2-devel xz-devel cairo-devel libpng-devel \
+    pango-devel freetype-devel tcl-devel tk-devel java-1.8.0-openjdk-devel \
+    libXt-devel libjpeg-devel readline-devel which gcc-gfortran expat-devel libxml2-devel \
+    libtiff libtiff-devel cmake3 autoconf automake libtool harfbuzz-devel fribidi-devel \
+    openssl11-devel \
+    google-noto-sans-fonts google-noto-sans-cjk-fonts \
+    && yum clean all \
+    && fc-cache -fv
+
+# SQLite
+RUN wget https://www.sqlite.org/2024/sqlite-autoconf-${SQLITE_VERSION}.tar.gz \
+    && tar -xzf sqlite-autoconf-${SQLITE_VERSION}.tar.gz \
+    && cd sqlite-autoconf-${SQLITE_VERSION} \
+    && ./configure --prefix=/usr/local \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf sqlite-autoconf-${SQLITE_VERSION} sqlite-autoconf-${SQLITE_VERSION}.tar.gz
+
+# GEOS
+RUN wget http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
+    && tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
+    && cd geos-${GEOS_VERSION} \
+    && mkdir build && cd build \
+    && cmake3 .. -DCMAKE_BUILD_TYPE=Release \
+    && make -j$(nproc) \
+    && make install \
+    && cd ../.. \
+    && rm -rf geos-${GEOS_VERSION} geos-${GEOS_VERSION}.tar.bz2
+
+# UDUNITS
+RUN wget https://github.com/Unidata/UDUNITS-2/archive/refs/tags/v${UDUNITS_VERSION}.tar.gz \
+    && tar -xzf v${UDUNITS_VERSION}.tar.gz \
+    && cd UDUNITS-2-${UDUNITS_VERSION} \
+    && autoreconf -i \
+    && ./configure --prefix=/usr/local \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf UDUNITS-2-${UDUNITS_VERSION} v${UDUNITS_VERSION}.tar.gz
+
+RUN ln -s /usr/local/bin/geos-config /usr/bin/geos-config
+RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
+
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
+
+# PROJ
+RUN wget https://download.osgeo.org/proj/proj-7.2.1.tar.gz \
+    && tar -xzf proj-7.2.1.tar.gz \
+    && cd proj-7.2.1 \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf proj-7.2.1 proj-7.2.1.tar.gz
+
+# GDAL
+RUN wget https://download.osgeo.org/gdal/3.2.1/gdal-3.2.1.tar.gz \
+    && tar -xzf gdal-3.2.1.tar.gz \
+    && cd gdal-3.2.1 \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf gdal-3.2.1 gdal-3.2.1.tar.gz
+
+# R
+RUN wget https://cran.r-project.org/src/base/R-4/R-${R_VERSION}.tar.gz \
+    && tar -xzf R-${R_VERSION}.tar.gz \
+    && cd R-${R_VERSION} \
+    && ./configure --enable-R-shlib --with-blas --with-lapack \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf R-${R_VERSION} R-${R_VERSION}.tar.gz
+
+ENV PATH="${PATH}:/usr/local/bin/R"
+
+# R packages - in dependency order
+
+# Core utilities used by runtime.r and config.r
+RUN Rscript -e "install.packages(c('jsonlite', 'logger', 'remotes'), repos = 'https://cloud.r-project.org/')"
+
+# openssl pinned to 1.4.6 as required by aws.s3
+RUN Rscript -e "remotes::install_version('openssl', version = '1.4.6', repos = 'https://cloud.r-project.org/')"
+
+# HTTP and AWS SDK clients
+RUN Rscript -e "install.packages(c('httr', 'aws.s3', 'paws'), repos = 'https://cloud.r-project.org/')"
+
+# Geo packages - s2 must be installed before sf; terra from r-universe for GDAL 3.2.1 compatibility
+RUN Rscript -e "install.packages(c('s2', 'sf'), repos = 'https://cloud.r-project.org/')" \
+    && Rscript -e "install.packages('terra', repos = 'https://rspatial.r-universe.dev')" \
+    && Rscript -e "install.packages('raster', repos = 'https://cloud.r-project.org/')"
+
+# HTML report generator
+RUN Rscript -e "install.packages('R2HTML', repos = 'https://cloud.r-project.org/')"

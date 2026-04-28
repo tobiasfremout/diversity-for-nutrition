@@ -39,6 +39,10 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
+# Lambda deploy
+.env
+local_data/
+
 # pkgdown site
 docs/
 

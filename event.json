@@ -1,0 +1,13 @@
+{
+  "lon": -49.91,
+  "lat": -26.34,
+  "edible_parts_ID": "NULL",
+  "food_groups_ID": "NULL",
+  "growth_forms_ID": "NULL",
+  "species_type_ID": "NULL",
+  "soil_con_ID": "NULL",
+  "within_range": "yes",
+  "incl_tentative": "yes",
+  "SSP": "SSP2",
+  "language_output": "EN"
+}
