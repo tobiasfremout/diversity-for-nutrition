@@ -6,11 +6,11 @@ R_HOME <- if (isTRUE(as.logical(Sys.getenv("USE_LOCAL_FILES", unset = "FALSE")))
   "/var/task"
 }
 
-BUCKET_NAME <- "diversity-for-nutrition"
-DATA_FOLDER <- Sys.getenv("DATA_FOLDER", unset = "diversity-for-nutrition-data/Data")
+BUCKET_NAME <- "d4n-data"
+DATA_FOLDER <- Sys.getenv("DATA_FOLDER", unset = "D4N_data")
 OUTPUT_FOLDER <- "diversity"
 TMP_FOLDER <- tempdir()
-CACHE_DIR <- "/tmp/diversity-for-nutrition-cache"
+CACHE_DIR <- "/tmp/d4n_cache"
 CACHE_VERSION_KEY <- file.path(DATA_FOLDER, "cache_version.txt")
 
 debug_mode <- as.logical(Sys.getenv("debug_mode", unset = "FALSE"))

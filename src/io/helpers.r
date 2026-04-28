@@ -76,6 +76,31 @@ reverse_geocode <- function(lon, lat, language_output = "EN") {
   return(result)
 }
 
+# Classify a country (ISO3 code) as part of South America ("SA") or Central
+# America + Caribbean ("CA"). Used to decide which split of the species
+# distribution maps to load when SPLIT_MAPS_BY_REGION=TRUE.
+region_from_country <- function(iso3) {
+  sa_countries <- c(
+    "ARG", "BOL", "BRA", "CHL", "COL", "ECU",
+    "GUF", "GUY", "PER", "PRY", "SUR", "URY", "VEN"
+  )
+  ca_countries <- c(
+    "BLZ", "CRI", "GTM", "HND", "MEX", "NIC", "PAN", "SLV",
+    "ABW", "ATG", "BHS", "BRB", "CUB", "CYM", "DMA", "DOM",
+    "GRD", "HTI", "JAM", "KNA", "LCA", "MSR", "PRI", "TCA",
+    "TTO", "VCT", "VGB", "VIR"
+  )
+
+  if (iso3 %in% sa_countries) return("SA")
+  if (iso3 %in% ca_countries) return("CA")
+  # Outside LatAm (e.g. USA via the Everglades ecoregion that the source
+  # shapefile includes). Return NA so load_maps falls back to the combined
+  # Maps/ folder instead of crashing; callers that need SA/CA will check.
+  warning("Country '", iso3, "' is not mapped to a LatAm region (SA or CA). ",
+          "Falling back to the combined Maps/ folder.")
+  return(NA_character_)
+}
+
 # Helper function to safely read CSVs from S3
 safe_read_csv <- function(path, ...) {
   temp_file <- download_from_s3(path)

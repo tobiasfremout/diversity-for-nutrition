@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+  Dev-only HTML viewer for local runs of the d4n pipeline.
+
+  How to use
+  ----------
+  After running test_runner.R (or mainNutrition directly) with USE_LOCAL_FILES=TRUE,
+  the R code copies this file into local_data/diversity/report_<timestamp>/ next to
+  data.js. Open the file in your browser (double-click) to see coords, filters,
+  biome context and the species table for that run.
+
+  This viewer is NOT the production report. The production report is generated
+  by the WordPress theme (gitlab.com/camilor67/d4n-wp) and intentionally lives
+  in a separate repo — this tool exists only to make local iteration faster.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>d4n — local viewer</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #222;
+        }
+        h1 { font-weight: 600; }
+        h2 {
+            font-weight: 500;
+            margin-top: 1.75rem;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 0.25rem;
+        }
+        #mini-map {
+            height: 260px;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+        }
+        #dev-banner {
+            background: #fff3cd;
+            border-bottom: 1px solid #ffe69c;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: #664d03;
+        }
+        table.dataTable thead th { background-color: #f8f9fa; }
+        #load-error {
+            display: none;
+            max-width: 760px;
+            margin: 2rem auto;
+        }
+    </style>
+
+    <!-- data.js must sit next to this file. It defines window.d4nReport. -->
+    <script src="data.js" onerror="document.getElementById('load-error').style.display='block'"></script>
+</head>
+<body>
+    <div id="dev-banner">
+        <strong>Local viewer</strong> — dev-only preview of a run in this folder. Not the production report.
+    </div>
+
+    <div id="load-error" class="alert alert-danger">
+        <strong>Could not load <code>data.js</code>.</strong>
+        This viewer expects to live in the same folder as a <code>data.js</code> file produced by a local run of the d4n pipeline. Make sure you're opening it from inside <code>local_data/diversity/report_&lt;timestamp&gt;/</code>.
+    </div>
+
+    <div class="container py-3">
+        <h1 class="text-primary text-center mt-2">d4n — local run results</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h2>Location</h2>
+                <ul class="list-unstyled ms-2">
+                    <li><b>Coordinates: </b><span id="coords"></span></li>
+                    <li><b>Country: </b><span id="country"></span></li>
+                    <li><b>Region: </b><span id="region"></span></li>
+                    <li><b>Biome: </b><span id="biome"></span></li>
+                </ul>
+                <div id="mini-map"></div>
+            </div>
+            <div class="col-md-6">
+                <h2>Filters applied</h2>
+                <dl class="row small" id="filters-list"></dl>
+            </div>
+        </div>
+
+        <h2>Recommended species (<span id="n-species">0</span>)</h2>
+
+        <div id="empty-state" class="alert alert-warning" style="display:none;">
+            <strong>No species match the current selection.</strong>
+            Try loosening the biological filters (e.g. clear the edible parts, food groups, or soil conditions) or switch <em>Restrict to known range</em> to <em>No</em> to include tentative predictions further from the known distribution.
+        </div>
+
+        <table class="table table-striped" id="speciesTable" style="display:none;">
+            <thead><tr>
+                <th>#</th>
+                <th>Species</th>
+                <th>Family</th>
+                <th>Growth form</th>
+                <th>Wild / cultivated</th>
+                <th>Edible part</th>
+                <th>Food group</th>
+                <th>Use</th>
+            </tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+    (function () {
+        var d = window.d4nReport;
+        if (!d) {
+            document.getElementById('load-error').style.display = 'block';
+            return;
+        }
+
+        // Location
+        document.getElementById('coords').textContent   = d.coords ? (d.coords.lon + ', ' + d.coords.lat) : '';
+        document.getElementById('country').textContent  = d.country || '';
+        document.getElementById('region').textContent   = d.region || '';
+        document.getElementById('biome').textContent    = d.biome || '';
+        document.getElementById('n-species').textContent = d.n_species || 0;
+
+        // Filters applied
+        var f = d.filters || {};
+        var FILTER_LABELS = {
+            edible_parts_ID:  'Edible parts',
+            food_groups_ID:   'Food groups',
+            growth_forms_ID:  'Growth forms',
+            species_type_ID:  'Species type',
+            soil_con_ID:      'Soil conditions',
+            within_range:     'Restrict to known range',
+            incl_tentative:   'Include tentative',
+            SSP:              'Climate scenario',
+            language_output:  'Report language'
+        };
+        function formatVal(v) {
+            if (v === null || v === undefined || v === '' || (Array.isArray(v) && v.length === 0)) return '<em>any</em>';
+            if (Array.isArray(v)) return v.join(', ');
+            return String(v);
+        }
+        var filtersList = document.getElementById('filters-list');
+        Object.keys(FILTER_LABELS).forEach(function (key) {
+            var dt = document.createElement('dt');
+            dt.className = 'col-sm-5 text-muted';
+            dt.textContent = FILTER_LABELS[key];
+            var dd = document.createElement('dd');
+            dd.className = 'col-sm-7';
+            dd.innerHTML = formatVal(f[key]);
+            filtersList.appendChild(dt);
+            filtersList.appendChild(dd);
+        });
+
+        // Mini-map (OSM tiles — Google Hybrid requires network permissions
+        // that sometimes fail from file:// URLs; OSM works everywhere).
+        if (d.coords && typeof L !== 'undefined') {
+            var map = L.map('mini-map').setView([d.coords.lat, d.coords.lon], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            L.marker([d.coords.lat, d.coords.lon]).addTo(map);
+        }
+
+        // Species table or empty state
+        var rows = d.species || [];
+        if (!rows || rows.length === 0) {
+            document.getElementById('empty-state').style.display = 'block';
+        } else {
+            document.getElementById('speciesTable').style.display = '';
+            jQuery('#speciesTable').DataTable({
+                data: rows,
+                pageLength: 25,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
+                columns: [
+                    { data: 'id' },
+                    { data: 'species' },
+                    { data: 'family' },
+                    { data: 'growth_form',        defaultContent: '' },
+                    { data: 'wild_or_cultivated', defaultContent: '' },
+                    { data: 'plant_part',         defaultContent: '' },
+                    { data: 'food_group',         defaultContent: '' },
+                    { data: 'use',                defaultContent: '' }
+                ]
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

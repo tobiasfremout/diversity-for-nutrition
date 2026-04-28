@@ -3,37 +3,49 @@
 # =============================================================================
 
 # load present distribution maps for all species in species_set
-load_maps <- function(species_set, 
+load_maps <- function(species_set,
                       DATA_FOLDER,
                       BUCKET_NAME,
                       within_range,
                       SSP,
-                      biome) {
+                      biome,
+                      region = NULL) {
+
+  # Root folder for map rasters. When SPLIT_MAPS_BY_REGION=TRUE and region is
+  # a known LatAm region (SA/CA), load from "Maps SA" / "Maps CA" for speed.
+  # Otherwise (flag off, or region=NA because the click landed outside the
+  # LatAm lookup) fall back to the single combined "Maps" folder.
+  split_by_region <- isTRUE(as.logical(Sys.getenv("SPLIT_MAPS_BY_REGION", unset = "FALSE")))
+  maps_root <- if (split_by_region && !is.null(region) && !is.na(region)) {
+    paste0("Maps ", region)
+  } else {
+    "Maps"
+  }
 
   # load distribution maps present climate
-  log_step("n03 [load_maps]", "Loading distribution maps present climate...")
-  
+  log_step("n03 [load_maps]", paste0("Loading distribution maps present climate from '", maps_root, "'..."))
+
   if(within_range == "yes") {
-    maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence masked by hull")
+    maps_folder <- file.path(DATA_FOLDER, maps_root, "Presence-absence masked by hull")
   }
   if(within_range == "no") {
-    maps_folder <- file.path(DATA_FOLDER, "Maps", "Presence-absence")
+    maps_folder <- file.path(DATA_FOLDER, maps_root, "Presence-absence")
   }
   files <- list_files_in_s3(bucket = BUCKET_NAME, prefix = maps_folder)
   files <- files[grepl("\\.tif$", files)]
   distr_stack <- terra::rast(lapply(files, load_raster))
-  
+
   # change the names to the species names only
   names(distr_stack) <- tools::file_path_sans_ext(basename(sources(distr_stack)))
-  
+
   # load distribution maps future climate
   log_step("n04 [load_maps]", "Loading distribution maps future climate...")
-  
+
   if(within_range == "yes") {
-    maps_folder <- file.path(DATA_FOLDER, "Maps", "Future masked by hull", SSP)
+    maps_folder <- file.path(DATA_FOLDER, maps_root, "Future masked by hull", SSP)
   }
   if(within_range == "no") {
-    maps_folder <- file.path(DATA_FOLDER, "Maps", "Future", SSP)
+    maps_folder <- file.path(DATA_FOLDER, maps_root, "Future", SSP)
   }
   files <- list_files_in_s3(bucket = BUCKET_NAME, prefix = maps_folder)
   files <- files[grepl("\\.tif$", files)]

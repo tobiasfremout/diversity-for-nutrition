@@ -1,15 +1,6 @@
 # Orchestrator script for Diversity for Nutrition tool
+# R_HOME is already defined by config.r (sourced from functions.r before this file).
 
-# set R_HOME
-R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
-
-# source config.R
-source(file.path(R_HOME, "config.R"))
-
-# reset R_HOME
-R_HOME <- "C:/Users/tobia/Documents/GitHub/diversity-for-nutrition"
-
-# source scripts
 source(file.path(R_HOME, "src", "libs.r"))
 source(file.path(R_HOME, "src", "io", "helpers.r"))
 source(file.path(R_HOME, "src", "io", "utils.r"))
@@ -18,8 +9,7 @@ source(file.path(R_HOME, "src", "input", "get_biome.r"))
 source(file.path(R_HOME, "src", "data", "load_data.r"))
 source(file.path(R_HOME, "src", "data", "load_maps.r"))
 source(file.path(R_HOME, "src", "analysis", "species_analysis.r"))
-# source(file.path(R_HOME, "src", "output", "visualization.r"))
-source(file.path(R_HOME, "src", "output", "report_html.r"))
+source(file.path(R_HOME, "src", "output", "report_data.r"))
 
 # main function to call the other functions
 process_nutrition <- function(lon = NULL,
@@ -64,32 +54,42 @@ process_nutrition <- function(lon = NULL,
     ##############################################################################
     # 2. Get biome
     ##############################################################################
+    # Use inputs$lon / inputs$lat (already coerced to numeric by
+    # parse_nutrition_inputs). The raw lon/lat arguments arrive as strings
+    # whenever the function is invoked from the web app, which makes
+    # terra::vect(matrix(c(lon,lat),...)) fail with "coordinates must be numeric".
     biome <- get_biome(
-      lon = lon,
-      lat = lat,
+      lon = inputs$lon,
+      lat = inputs$lat,
       DATA_FOLDER = DATA_FOLDER
     )
     # print(biome)
-    
+
     ##############################################################################
     # 3. Load maps
     ##############################################################################
+    # Resolve country+region once (used by load_maps and the report payload).
+    # SA/CA split is only applied in load_maps when SPLIT_MAPS_BY_REGION=TRUE.
+    country <- coords2country(inputs$lon, inputs$lat)
+    region <- region_from_country(country)
+
     maps <- load_maps(
       species_set = data$species_set,
       DATA_FOLDER = DATA_FOLDER,
       BUCKET_NAME = BUCKET_NAME,
       within_range = inputs$within_range,
       SSP = inputs$SSP,
-      biome = biome$biome_name
+      biome = biome$biome_name,
+      region = region
     )
     # print(maps)
-    
+
     ##############################################################################
     # 4. Extract species that can grow at selected site
     ##############################################################################
     species_extr <- extract_suitable_species(
-      lon = lon,
-      lat = lat,
+      lon = inputs$lon,
+      lat = inputs$lat,
       maps_present = maps$distr_stack,
       maps_future = maps$distr_stack_future
     )
@@ -116,21 +116,17 @@ process_nutrition <- function(lon = NULL,
       incl_tentative = inputs$incl_tentative,
       language_output = inputs$language_output
     )
-    print(species_filt)
-    
     ##############################################################################
-    # 6. Visualization
+    # 6. Generate report data (JSON for frontend consumption)
     ##############################################################################
-    # vis <- visualize(species_res = species_res)
-    
-    ##############################################################################
-    # 7. Generate HTML report
-    ##############################################################################
-    generate_html_report(
-      nutr_table = species_filt$nutr_table,
-      output_result = REPORT_FOLDER,
-      language_output = inputs$language_output,
-      trans_df = data$trans_df
+    generate_report_data(
+      inputs        = inputs,
+      country       = country,
+      region        = region,
+      biome_name    = biome$biome_name,
+      species_filt  = species_filt,
+      trans_df      = data$trans_df,
+      output_folder = REPORT_FOLDER
     )
-    
+
 }

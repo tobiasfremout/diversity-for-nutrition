@@ -53,7 +53,7 @@ src/
 
 ## Data
 
-Expected data folder structure (S3 bucket: `diversity-for-nutrition`, default prefix: `diversity-for-nutrition-data/Data`):
+Expected data folder structure (S3 bucket: `d4n-data`, default prefix: `D4N_data`):
 
 ```
 Tables/
@@ -72,8 +72,16 @@ Set the environment variable `USE_LOCAL_FILES=TRUE` and `LOCAL_DATA_PATH` to you
 
 ```r
 Sys.setenv(USE_LOCAL_FILES = "TRUE")
-Sys.setenv(LOCAL_DATA_PATH = "C:/path/to/diversity-for-nutrition-data")
+Sys.setenv(LOCAL_DATA_PATH = "C:/path/to/D4N_data")
 ```
+
+Each local run writes three files into `local_data/diversity/report_<timestamp>/`:
+
+- `data.json` — structured output (coords, country, region, biome, filters, species table, translation labels).
+- `data.js` — same payload as a `window.d4nReport` assignment, consumed by the local viewer.
+- `local_viewer.html` — a **dev-only** HTML viewer that renders `data.js` as a table + mini-map. Open this file in your browser right after the run to inspect results visually.
+
+The viewer is intentionally independent from the production report (which lives in the WordPress theme repo). It only exists to validate local runs and is never uploaded to S3 or shown to end users.
 
 ## Dependencies
 
