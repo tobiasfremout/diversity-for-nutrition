@@ -1,5 +1,12 @@
 # Shared runtime configuration for Lambda and local execution.
 
+# Local development defaults — only applied outside Lambda, and only when the
+# env var is not already set. Override by setting the env var before sourcing.
+if (!nzchar(Sys.getenv("LAMBDA_TASK_ROOT"))) {
+  if (!nzchar(Sys.getenv("USE_LOCAL_FILES")))  Sys.setenv(USE_LOCAL_FILES = "TRUE")
+  if (!nzchar(Sys.getenv("LOCAL_DATA_PATH")))  Sys.setenv(LOCAL_DATA_PATH = "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data")
+}
+
 R_HOME <- if (isTRUE(as.logical(Sys.getenv("USE_LOCAL_FILES", unset = "FALSE")))) {
   normalizePath(getwd(), winslash = "/", mustWork = FALSE)
 } else {
