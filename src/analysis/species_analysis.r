@@ -1,4 +1,57 @@
 # =============================================================================
+# Extract species that can grow at the selected coordinates using parquet file
+# =============================================================================
+extract_suitable_species_parquet <- function(lon, lat, within_range, SSP) {
+  
+  log_step("n05 [species_analysis]", "Extracting suitable species...")
+  
+  # path to the single parquet file
+  parquet_path <- "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/D4N_data/D4N_maps.parquet"
+  
+  # select the right future column based on SSP
+  ssp_col <- ifelse(SSP == "SSP2", "present_ssp2", "present_ssp3")
+  
+  # build optional hull filter
+  hull_filter <- ifelse(within_range == "yes", "AND within_hull = TRUE", "")
+  
+  con <- dbConnect(duckdb())
+  
+  log_step("n05b [species_analysis]", "Extracting future presence...")
+  
+  # find nearest grid point and extract all species info in one query
+  result <- dbGetQuery(con, sprintf("
+    WITH closest AS (
+      SELECT lon, lat
+      FROM read_parquet('%s')
+      ORDER BY ((lon - %f)^2 + (lat - %f)^2)
+      LIMIT 1
+    )
+    SELECT species, present_now, %s AS n_models
+    FROM read_parquet('%s')
+    WHERE lon = (SELECT lon FROM closest)
+      AND lat = (SELECT lat FROM closest)
+      %s
+  ", parquet_path, lon, lat, ssp_col, parquet_path, hull_filter))
+  
+  dbDisconnect(con)
+  
+  # filter suitable species (present_now == 1)
+  suitable_idx <- result$present_now == 1
+  suitable_species <- result$species[suitable_idx]
+  
+  # get n_models for suitable species only
+  n_models <- result$n_models[suitable_idx]
+  names(n_models) <- suitable_species
+  
+  # return of the function
+  list(
+    suitable_species = suitable_species,
+    n_models = n_models
+  )
+  
+}
+
+# =============================================================================
 # Extract species that can grow at the selected coordinates
 # =============================================================================
 extract_suitable_species <- function(lon, lat, maps_present, maps_future) {
@@ -30,6 +83,14 @@ extract_suitable_species <- function(lon, lat, maps_present, maps_future) {
   )
   
 }
+
+
+
+
+
+
+
+
 
 # =============================================================================
 # Filter species according to user inputs
