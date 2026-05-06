@@ -77,6 +77,12 @@ process_nutrition <- function(lon = NULL,
     # print(species_extr)
     
     ##############################################################################
+    # 4. Get country and region
+    ##############################################################################
+    country <- coords2country(inputs$lon, inputs$lat)
+    region <- region_from_country(country)
+    
+    ##############################################################################
     # Load maps
     ##############################################################################
     # Resolve country+region once (used by load_maps and the report payload).
