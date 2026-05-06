@@ -5,8 +5,12 @@ extract_suitable_species_parquet <- function(lon, lat, within_range, SSP) {
   
   log_step("n05 [species_analysis]", "Extracting suitable species...")
   
-  # path to the single parquet file
-  parquet_path <- "C:/Users/tobia/Dropbox/Diversity for Nutrition/diversity-for-nutrition-data/D4N_data/D4N_maps.parquet"
+  # resolve parquet path: local file or download from S3
+  parquet_key <- file.path(DATA_FOLDER, "D4N_maps.parquet")
+  parquet_path <- download_from_s3(parquet_key)
+  if (is.null(parquet_path) || !file.exists(parquet_path)) {
+    stop("D4N_maps.parquet not found (key: ", parquet_key, ")")
+  }
   
   # select the right future column based on SSP
   ssp_col <- ifelse(SSP == "SSP2", "present_ssp2", "present_ssp3")
@@ -83,14 +87,6 @@ extract_suitable_species <- function(lon, lat, maps_present, maps_future) {
   )
   
 }
-
-
-
-
-
-
-
-
 
 # =============================================================================
 # Filter species according to user inputs
