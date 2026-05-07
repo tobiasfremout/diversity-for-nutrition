@@ -146,11 +146,13 @@ filter_species <- function(nutr_dat,
 
   log_step("n09 [species_analysis]", "Filtering species: species types (wild/cultivated)...")
   
-  # select only the species types selected by the user
+  # select only the species types selected by the user.
+  # The lookup table is named species_types but the column on nutr_dat is
+  # wild_or_cultivated (see line 173 below where the report uses the same name).
   if(length(species_type_ID) > 0 && species_type_ID[1] != 1) {
     m <- match(species_type_ID, species_types$ID)
     species_type_sel <- species_types$species_type[m]
-    j <- which(nutr_dat$species_type %in% species_type_sel)
+    j <- which(nutr_dat$wild_or_cultivated %in% species_type_sel)
     nutr_dat <- nutr_dat[j,]
   }
   
